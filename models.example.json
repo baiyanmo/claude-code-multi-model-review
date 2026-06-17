@@ -1,0 +1,18 @@
+{
+  "models": {
+    "deepseek": {
+      "name": "DeepSeek V4 Pro",
+      "provider": "DeepSeek",
+      "base_url": "https://api.deepseek.com/v1",
+      "api_key": "sk-your-key-here",
+      "model": "deepseek-v4-pro"
+    },
+    "doubao": {
+      "name": "豆包 DeepSeek",
+      "provider": "Volcengine",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+      "api_key": "your-key-here",
+      "model": "ep-your-endpoint-id"
+    }
+  }
+}
