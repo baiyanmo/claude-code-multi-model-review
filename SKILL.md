@@ -11,7 +11,7 @@ description: 多模型代码审查。调用用户配置的多个外部模型（D
 
 ### 步骤 1：检查模型库
 
-读取 `C:\Users\86183\.claude\skills\custom-review\models.json`。
+读取 skill 所在目录下的 `models.json`。
 
 **如果 models 为空 → 引导用户首次配置：**
 
@@ -52,10 +52,10 @@ git -C <项目根目录> diff --cached
 对于用户选中的每个模型：
 
 ```bash
-node "C:\Users\86183\.claude\skills\custom-review\review.js" \
+node review.js \
   --diff <diff临时文件路径> \
   --model <模型key> \
-  --config "C:\Users\86183\.claude\skills\custom-review\models.json" \
+  --config models.json \
   [--angle "<审查侧重点>"]
 ```
 
