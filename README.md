@@ -1,88 +1,93 @@
 # Claude Code Multi-Model Review Skill
 
-调用多个外部 AI 模型并行审查代码改动，每个模型给出独立意见，综合对比各模型的发现。
+Call multiple external AI models to review your code changes in parallel. Each model gives independent feedback, then the results are compared side by side.
 
-## 为什么需要
+## Why
 
-Claude Code 本身的模型可能通过代理指向同一个底层模型（如 DeepSeek），审查能力单一。这个 skill 让你同时调用不同厂商的模型（DeepSeek、豆包、千问、OpenAI 等）审查同一份 diff，互相验证，避免单一模型的盲区。
+Claude Code's built-in model may route through a proxy to a single backend model (e.g., DeepSeek), limiting review diversity. This skill lets you invoke models from different providers (DeepSeek, Doubao, Qwen, OpenAI, etc.) simultaneously on the same diff — catching blind spots that any single model might miss.
 
-## 功能
+## Features
 
-- **多模型并行审查** — 同时调用多个外部模型，互不等待
-- **独立意见** — 每个模型用自己的角度评审，不做删减
-- **交叉验证** — 多个模型同时发现的问题置信度最高
-- **分歧对比** — 展示模型之间的不同意见
-- **自由扩展** — 随时添加新的模型 API
+- **Parallel reviews** — All selected models run at the same time, no waiting
+- **Independent opinions** — Each model's output is preserved in full, no truncation
+- **Cross-validation** — Issues flagged by multiple models have higher confidence
+- **Divergence comparison** — See where models disagree
+- **Easy to extend** — Add new model APIs anytime
 
-## 文件结构
+## File Structure
 
 ```
 custom-review/
-  SKILL.md      # Skill 编排流程（Claude Code 读这个）
-  review.js     # 单模型审查脚本（OpenAI 兼容 API）
-  models.json   # 保存用户配置的模型 API（不进 git）
+  SKILL.md              # Workflow orchestration (Claude Code reads this)
+  review.js             # Single-model review script (OpenAI-compatible API)
+  models.example.json   # Example model config template
+  models.json           # Your actual model config (gitignored)
 ```
 
-## 快速开始
+## Quick Start
 
-### 1. 安装 Skill
+### 1. Install
 
-将整个 `custom-review/` 目录放到 `~/.claude/skills/` 下：
+Copy the `custom-review/` directory to `~/.claude/skills/`:
 
 ```bash
 git clone https://github.com/baiyanmo/claude-code-multi-model-review.git
 cp -r claude-code-multi-model-review ~/.claude/skills/custom-review
 ```
 
-### 2. 配置模型
+### 2. Configure Models
 
-在 Claude Code 中说：
+In Claude Code, say:
 
 > 添加审查模型
 
-按提示填写模型信息：
-- 名称（自定义，如"豆包"）
-- API Base URL（OpenAI 兼容格式）
+Or in English:
+
+> Add a review model
+
+Provide the following info for each model:
+- Name (e.g., "DeepSeek")
+- API Base URL (OpenAI-compatible format)
 - API Key
-- 模型 ID
+- Model ID (e.g., `deepseek-v4-pro`)
 
-建议至少配置 2 个模型才能发挥"多模型"的价值。
+Configure at least 2 models to get the most out of multi-model review.
 
-### 3. 审查代码
+### 3. Review Code
 
-在有 git 仓库的目录下说：
+In a git repo, say:
 
-> 审查代码 / review / 帮我看看代码
+> 审查代码 / review / check my changes
 
-Skill 会触发，让你选择用哪几个模型，然后并行审查当前 diff。
+The skill triggers, lets you pick which models to use, then runs them all in parallel.
 
-## 支持的模型
+## Supported Providers
 
-任何 OpenAI 兼容 API 都可以，包括但不限于：
+Any OpenAI-compatible API works, including:
 
-| 厂商 | Base URL |
-|------|----------|
+| Provider | Base URL |
+|----------|----------|
 | DeepSeek | `https://api.deepseek.com/v1` |
-| 阿里云百炼（千问） | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
-| 火山引擎（豆包） | `https://ark.cn-beijing.volces.com/api/v3` |
+| Alibaba Bailian (Qwen) | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| Volcengine (Doubao) | `https://ark.cn-beijing.volces.com/api/v3` |
 | OpenAI | `https://api.openai.com/v1` |
 | SiliconFlow | `https://api.siliconflow.cn/v1` |
-| 其他兼容代理 | 自定义 |
+| Custom proxy | Any URL |
 
-## 命令行用法
+## CLI Usage
 
-也可以直接在终端调用 review.js：
+You can also run `review.js` directly from the terminal:
 
 ```bash
 node review.js --diff /tmp/my_diff.txt --model deepseek --config models.json
-node review.js --diff /tmp/my_diff.txt --model doubao --angle "关注安全漏洞" --config models.json
+node review.js --diff /tmp/my_diff.txt --model doubao --angle "Focus on security issues" --config models.json
 ```
 
-## 安全
+## Security
 
-- `models.json` 包含 API Key，已在 `.gitignore` 中排除
-- review.js 只依赖 Node.js 内置模块，无需 `npm install`
-- API 调用通过 HTTPS，超时 120 秒
+- `models.json` contains your API keys — excluded via `.gitignore`
+- `review.js` uses only Node.js built-in modules (no `npm install` needed)
+- API calls go over HTTPS, timeout at 120 seconds
 
 ## License
 
